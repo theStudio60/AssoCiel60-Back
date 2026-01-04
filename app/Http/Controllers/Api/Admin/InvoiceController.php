@@ -10,6 +10,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Mail\InvoicePaidMail;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PaymentReminderMail;
+use App\Models\ActivityLog;
 
 class InvoiceController extends Controller
 {

@@ -198,3 +198,7 @@ Route::middleware('auth:sanctum')->prefix('member')->group(function () {
 Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::get('/search', [App\Http\Controllers\Api\Admin\SearchController::class, 'globalSearch']);
 });
+
+// Payment Routes
+Route::post('/payment/paypal/create', [App\Http\Controllers\Api\PaymentController::class, 'createPayment']);
+Route::post('/payment/paypal/execute', [App\Http\Controllers\Api\PaymentController::class, 'executePayment']);
