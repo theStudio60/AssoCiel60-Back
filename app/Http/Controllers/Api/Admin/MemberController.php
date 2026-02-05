@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Subscription;
 use Illuminate\Support\Facades\DB;
+use App\Models\ActivityLog;
+use App\Models\Organization;
 
 class MemberController extends Controller
 {
@@ -52,7 +54,7 @@ class MemberController extends Controller
             $query->orderBy($sortBy, $sortOrder);
 
             // Pagination
-            $perPage = $request->get('per_page', 15);
+            $perPage = $request->get('per_page', 10);
             $members = $query->paginate($perPage);
 
             return response()->json([
@@ -157,7 +159,7 @@ class MemberController extends Controller
                         $member->phone,
                         $member->organization->name,
                         $subscription ? $subscription->subscriptionPlan->name : 'N/A',
-                        $subscription ? $subscription->status : 'N/A',
+                        $subscription ? $subscription->status : 'inactive',
                         $member->created_at->format('d/m/Y H:i')
                     ], ';');
                 }
@@ -233,6 +235,60 @@ class MemberController extends Controller
                 'message' => 'Membre supprimé'
             ]);
         } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Toggle member status (active/inactive)
+     */
+    public function toggleStatus(Request $request, $id)
+    {
+        try {
+            $user = User::findOrFail($id);
+            
+            // Récupérer l'organisation et l'abonnement
+            $organization = $user->organization;
+            
+            if (!$organization) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Aucune organisation trouvée pour ce membre'
+                ], 404);
+            }
+            
+            $subscription = $organization->subscriptions()->latest()->first();
+            
+            if (!$subscription) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Aucun abonnement trouvé'
+                ], 404);
+            }
+            
+            // Toggle status (active <-> expired)
+            $newStatus = ($subscription->status === 'active') ? 'expired' : 'active';
+            $subscription->status = $newStatus;
+            $subscription->save();
+            
+            // Log
+            ActivityLog::log(
+                'subscription_status_changed',
+                "Statut de l'abonnement de {$user->first_name} {$user->last_name} changé en {$newStatus}",
+                \App\Models\Subscription::class,
+                $subscription->id
+            );
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Statut modifié avec succès',
+                'status' => $newStatus
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Toggle status error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur: ' . $e->getMessage()

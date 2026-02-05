@@ -42,7 +42,7 @@ class SubscriptionController extends Controller
             $query->orderBy($sortBy, $sortOrder);
 
             // Pagination
-            $perPage = $request->get('per_page', 15);
+            $perPage = $request->get('per_page', 10);
             $subscriptions = $query->paginate($perPage);
 
             return response()->json([
@@ -153,6 +153,7 @@ class SubscriptionController extends Controller
                 'start_date' => now(),
                 'end_date' => now()->addYear(),
                 'status' => 'active',
+                'auto_renew' => true,
             ]);
 
             return response()->json([

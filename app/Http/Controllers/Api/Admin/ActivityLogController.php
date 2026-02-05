@@ -44,7 +44,7 @@ class ActivityLogController extends Controller
             $query->orderBy('created_at', 'desc');
 
             // Pagination
-            $perPage = $request->get('per_page', 15);
+            $perPage = $request->get('per_page', 10);
             $logs = $query->paginate($perPage);
 
             return response()->json([
@@ -178,23 +178,26 @@ class ActivityLogController extends Controller
     /**
      * Delete old logs (older than X days)
      */
-    public function cleanup(Request $request)
-    {
-        try {
-            $days = $request->get('days', 90); // Par défaut 90 jours
-            
-            $deleted = ActivityLog::where('created_at', '<', now()->subDays($days))->delete();
+    /**
+ * Delete old logs (older than X days)
+ */
+public function cleanup(Request $request)
+{
+    try {
+        $days = $request->get('days', 90);
+        
+        $deleted = ActivityLog::where('created_at', '<', now()->subDays($days))->delete();
 
-            return response()->json([
-                'success' => true,
-                'message' => "$deleted logs supprimés",
-                'deleted' => $deleted
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur: ' . $e->getMessage()
-            ], 500);
-        }
+        return response()->json([
+            'success' => true,
+            'message' => "$deleted logs supprimés",
+            'deleted' => $deleted
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur: ' . $e->getMessage()
+        ], 500);
     }
+}
 }

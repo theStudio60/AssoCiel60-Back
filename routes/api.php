@@ -24,7 +24,8 @@ use App\Http\Controllers\Api\Member\MemberDashboardController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\MembershipController;
 use App\Http\Controllers\Api\ProfileController;
-
+use App\Http\Controllers\Api\DatatransController;
+use App\Http\Controllers\Api\StripeController;
 /*
 |--------------------------------------------------------------------------
 | Authentication Routes
@@ -33,14 +34,26 @@ use App\Http\Controllers\Api\ProfileController;
 */
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/verify-2fa', [AuthController::class, 'verify2FA']);
-Route::post('/forgot-password', [AuthController::class, 'forgotPassword']); // ← Nouveau
-Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+// Reset password (public routes)
+Route::post('/password/reset', [App\Http\Controllers\Api\PasswordResetController::class, 'resetPassword']);
 
+// Admin envoie reset link
+Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
+    Route::prefix('admins')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\Admin\AdminController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\Admin\AdminController::class, 'store']);
+        Route::put('/{id}', [App\Http\Controllers\Api\Admin\AdminController::class, 'update']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\Admin\AdminController::class, 'destroy']);
+    });
+    Route::post('/members/{userId}/send-reset-password', [App\Http\Controllers\Api\PasswordResetController::class, 'sendResetLinkByAdmin']);
+});
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
 });
 
+
+ 
 /*
 |--------------------------------------------------------------------------
 | Membership Routes (Public)
@@ -53,6 +66,11 @@ Route::prefix('membership')->group(function () {
     
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/payment/confirm', [MembershipController::class, 'confirmPayment']);
+        Route::post('/payment/paypal/create', [App\Http\Controllers\Api\PaymentController::class, 'createPayment']);
+        Route::post('/payment/paypal/execute', [App\Http\Controllers\Api\PaymentController::class, 'executePayment']);
+        Route::post('/payment/datatrans/create', [DatatransController::class, 'createTransaction'])->middleware('auth:sanctum');
+        Route::post('/payment/stripe/create', [StripeController::class, 'createCheckoutSession']);
+        Route::post('/payment/stripe/confirm', [StripeController::class, 'confirmPayment']);
     });
 });
 
@@ -90,6 +108,7 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
         Route::get('/{id}', [MemberController::class, 'show']);
         Route::put('/{id}', [MemberController::class, 'update']);
         Route::delete('/{id}', [MemberController::class, 'destroy']);
+        Route::put('/{id}/toggle-status', [MemberController::class, 'toggleStatus']);
     });
     
     // ========================================================================
