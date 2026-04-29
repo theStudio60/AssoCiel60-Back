@@ -246,9 +246,8 @@
             <tr>
                 <td style="width: 50%;">
                     <div class="logo">ALPRAIL</div>
-                    <p style="font-size: 8pt; color: #000; margin: 3px 0 0 0;">
-                        Route de Lausanne 1<br>
-                        1000 Lausanne, Suisse
+                     <p style="font-size: 8pt; color: #000; margin: 3px 0 0 0;">
+                        1200 Genève, Suisse
                     </p>
                 </td>
                 <td style="width: 50%;">
@@ -365,7 +364,7 @@
     <!-- Footer -->
     <div class="footer">
         <p>Merci de votre confiance • Pour toute question: contact@alprail.net</p>
-        <p>Alprail • Route de Lausanne 1 • 1000 Lausanne • Suisse</p>
+        <p>Alprail • 1200 Genève • Suisse</p>
     </div>
 </body>
 </html>

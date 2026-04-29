@@ -66,9 +66,9 @@ Route::prefix('membership')->group(function () {
     
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/payment/confirm', [MembershipController::class, 'confirmPayment']);
-        Route::post('/payment/paypal/create', [App\Http\Controllers\Api\PaymentController::class, 'createPayment']);
-        Route::post('/payment/paypal/execute', [App\Http\Controllers\Api\PaymentController::class, 'executePayment']);
-        Route::post('/payment/datatrans/create', [DatatransController::class, 'createTransaction'])->middleware('auth:sanctum');
+        // Route::post('/payment/paypal/create', [App\Http\Controllers\Api\PaymentController::class, 'createPayment']);
+        // Route::post('/payment/paypal/execute', [App\Http\Controllers\Api\PaymentController::class, 'executePayment']);
+        // Route::post('/payment/datatrans/create', [DatatransController::class, 'createTransaction'])->middleware('auth:sanctum');
         Route::post('/payment/stripe/create', [StripeController::class, 'createCheckoutSession']);
         Route::post('/payment/stripe/confirm', [StripeController::class, 'confirmPayment']);
     });
@@ -219,5 +219,8 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
 });
 
 // Payment Routes
-Route::post('/payment/paypal/create', [App\Http\Controllers\Api\PaymentController::class, 'createPayment']);
-Route::post('/payment/paypal/execute', [App\Http\Controllers\Api\PaymentController::class, 'executePayment']);
+// Route::post('/payment/paypal/create', [App\Http\Controllers\Api\PaymentController::class, 'createPayment']);
+// Route::post('/payment/paypal/execute', [App\Http\Controllers\Api\PaymentController::class, 'executePayment']);
+
+
+Route::post('/wordpress/new-article', [App\Http\Controllers\Api\ArticleNotificationController::class, 'notifyNewArticle']);
