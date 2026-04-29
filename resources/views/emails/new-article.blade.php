@@ -9,7 +9,7 @@
         .header { background: linear-gradient(135deg, #3776c5 0%, #2d5fa3 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
         .content { background: #fff; padding: 30px; border: 1px solid #e0e0e0; }
         .info-box { background: #f8f9fa; padding: 15px; border-left: 4px solid #3776c5; margin: 20px 0; }
-        .button { display: inline-block; background: linear-gradient(135deg, #3776c5 0%, #2d5fa3 100%); color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+        .button { display: inline-block; background: linear-gradient(135deg, #3776c5 0%, #2d5fa3 100%); color: #ffffff !important; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
         .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
     </style>
 </head>
