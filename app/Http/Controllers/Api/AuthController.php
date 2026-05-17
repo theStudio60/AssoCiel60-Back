@@ -25,9 +25,12 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
+            return response()->json([
+                'message' => 'Email ou mot de passe incorrect',
+                'errors' => [
+                    'email' => ['Email ou mot de passe incorrect']
+                ]
+            ], 401);
         }
 
         if ($user->two_factor_enabled) {
@@ -50,7 +53,6 @@ class AuthController extends Controller
             return response()->json([
                 'requires_2fa' => true,
                 'user_id' => $user->id,
-                'debug_code' => $code,
             ]);
         }
 
