@@ -44,6 +44,7 @@ class StripeController extends Controller
             // Créer la session Stripe Checkout
             $session = Session::create([
                 'payment_method_types' => ['card'],
+                'locale' => 'fr',
                 'line_items' => [[
                     'price_data' => [
                         'currency' => $currency_lower,
@@ -156,23 +157,42 @@ class StripeController extends Controller
                 ]);
             }
 
-            // Créer la facture avec TOUS les champs requis
-            $invoice = \App\Models\Invoice::create([
-                'organization_id' => $organization->id,
-                'subscription_id' => $subscription->id,
-                'subscription_plan_id' => $plan->id,
-                'invoice_number' => 'INV-' . now()->format('YmdHis') . '-' . strtoupper(substr(uniqid(), -4)),
-                'issue_date' => now(),
-                'due_date' => now()->addDays(30),
-                'amount' => $amount,
-                'tax_amount' => 0,
-                'total_amount' => $amount,
-                'currency' => strtoupper($currency),
-                'status' => 'paid',
-                'paid_at' => now(),
-                'payment_method' => 'Stripe',
-                'transaction_id' => $request->session_id,
-            ]);
+            // Récupérer la facture existante (créée lors de l'inscription) et la mettre à jour
+            $invoice = \App\Models\Invoice::where('subscription_id', $subscription->id)
+                ->where('status', 'pending')
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            if ($invoice) {
+                // Mettre à jour la facture existante
+                $invoice->update([
+                    'amount' => $amount,
+                    'total_amount' => $amount,
+                    'currency' => strtoupper($currency),
+                    'status' => 'paid',
+                    'paid_at' => now(),
+                    'payment_method' => 'Stripe',
+                    'transaction_id' => $request->session_id,
+                ]);
+            } else {
+                // Si aucune facture pending trouvée, en créer une (cas de renouvellement)
+                $invoice = \App\Models\Invoice::create([
+                    'organization_id' => $organization->id,
+                    'subscription_id' => $subscription->id,
+                    'subscription_plan_id' => $plan->id,
+                    'invoice_number' => 'INV-' . now()->format('YmdHis') . '-' . strtoupper(substr(uniqid(), -4)),
+                    'issue_date' => now(),
+                    'due_date' => now()->addDays(30),
+                    'amount' => $amount,
+                    'tax_amount' => 0,
+                    'total_amount' => $amount,
+                    'currency' => strtoupper($currency),
+                    'status' => 'paid',
+                    'paid_at' => now(),
+                    'payment_method' => 'Stripe',
+                    'transaction_id' => $request->session_id,
+                ]);
+            }
 
             // Log
             ActivityLog::log(

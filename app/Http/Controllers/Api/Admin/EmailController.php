@@ -30,10 +30,10 @@ class EmailController extends Controller
                 'reminder_days_before' => EmailSetting::get('reminder_days_before', 7),
                 'payment_enabled' => EmailSetting::get('payment_enabled', true),
                 'payment_subject' => EmailSetting::get('payment_subject', 'Paiement reçu - Facture {invoice_number}'),
-                'smtp_host' => env('MAIL_HOST', 'smtp.gmail.com'),
-                'smtp_port' => env('MAIL_PORT', '587'),
-                'smtp_from_email' => env('MAIL_FROM_ADDRESS', 'noreply@alprail.net'),
-                'smtp_from_name' => env('MAIL_FROM_NAME', 'Alprail'),
+                'smtp_host' => EmailSetting::get('smtp_host', env('MAIL_HOST', 'smtp.gmail.com')),
+                'smtp_port' => EmailSetting::get('smtp_port', env('MAIL_PORT', '587')),
+                'smtp_from_email' => EmailSetting::get('smtp_from_email', env('MAIL_FROM_ADDRESS', 'noreply@alprail.net')),
+                'smtp_from_name' => EmailSetting::get('smtp_from_name', env('MAIL_FROM_NAME', 'Alprail')),
             ];
 
             // Convertir les booléens
@@ -47,9 +47,10 @@ class EmailController extends Controller
                 'settings' => $settings
             ]);
         } catch (\Exception $e) {
+            \Log::error('Email settings get error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur: ' . $e->getMessage()
+                'message' => 'Erreur lors du chargement des paramètres'
             ], 500);
         }
     }
@@ -69,6 +70,10 @@ class EmailController extends Controller
             'reminder_days_before' => 'required|integer|min:1|max:30',
             'payment_enabled' => 'boolean',
             'payment_subject' => 'required|string|max:255',
+            'smtp_host' => 'nullable|string|max:255',
+            'smtp_port' => 'nullable|string|max:10',
+            'smtp_from_email' => 'nullable|email|max:255',
+            'smtp_from_name' => 'nullable|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -79,7 +84,7 @@ class EmailController extends Controller
         }
 
         try {
-            // Sauvegarder chaque paramètre
+            // Paramètres emails activés/désactivés
             EmailSetting::set('welcome_enabled', $request->welcome_enabled ? '1' : '0');
             EmailSetting::set('welcome_subject', $request->welcome_subject);
             EmailSetting::set('subscription_enabled', $request->subscription_enabled ? '1' : '0');
@@ -90,14 +95,29 @@ class EmailController extends Controller
             EmailSetting::set('payment_enabled', $request->payment_enabled ? '1' : '0');
             EmailSetting::set('payment_subject', $request->payment_subject);
 
+            // Paramètres SMTP
+            if ($request->smtp_host) {
+                EmailSetting::set('smtp_host', $request->smtp_host);
+            }
+            if ($request->smtp_port) {
+                EmailSetting::set('smtp_port', $request->smtp_port);
+            }
+            if ($request->smtp_from_email) {
+                EmailSetting::set('smtp_from_email', $request->smtp_from_email);
+            }
+            if ($request->smtp_from_name) {
+                EmailSetting::set('smtp_from_name', $request->smtp_from_name);
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Paramètres emails mis à jour'
             ]);
         } catch (\Exception $e) {
+            \Log::error('Email settings update error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur: ' . $e->getMessage()
+                'message' => 'Erreur lors de la mise à jour'
             ], 500);
         }
     }
@@ -182,9 +202,10 @@ class EmailController extends Controller
                 'message' => $message
             ]);
         } catch (\Exception $e) {
+            \Log::error('Email test send error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur: ' . $e->getMessage()
+                'message' => 'Erreur lors de l\'envoi de l\'email de test'
             ], 500);
         }
     }
@@ -203,7 +224,7 @@ class EmailController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur: ' . $e->getMessage()
+                'message' => 'Erreur lors du chargement des logs'
             ], 500);
         }
     }

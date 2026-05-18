@@ -226,18 +226,53 @@ class MemberController extends Controller
      */
     public function destroy($id)
     {
+        DB::beginTransaction();
+        
         try {
             $member = User::where('role', 'member')->findOrFail($id);
+            $organization = $member->organization;
+            
+            // Log avant suppression
+            ActivityLog::log(
+                'member_deleted',
+                "Membre supprimé : {$member->first_name} {$member->last_name} ({$member->email})",
+                User::class,
+                $member->id
+            );
+            
+            // Supprimer le membre
             $member->delete();
+            
+            // Si l'organisation existe et n'a plus d'autres membres, la supprimer aussi
+            if ($organization) {
+                $hasOtherMembers = User::where('organization_id', $organization->id)->exists();
+                
+                if (!$hasOtherMembers) {
+                    // Supprimer abonnements, factures, paiements liés à l'organisation
+                    foreach ($organization->subscriptions as $subscription) {
+                        $subscription->invoices()->delete();
+                        $subscription->payments()->delete();
+                        $subscription->delete();
+                    }
+                    
+                    // Supprimer l'organisation
+                    $organization->delete();
+                }
+            }
+            
+            DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Membre supprimé'
+                'message' => 'Membre supprimé avec succès'
             ]);
         } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Erreur suppression membre: ' . $e->getMessage());
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur: ' . $e->getMessage()
+                'message' => 'Erreur lors de la suppression'
             ], 500);
         }
     }
