@@ -32,6 +32,8 @@ class EmailController extends Controller
                 'payment_subject' => EmailSetting::get('payment_subject', 'Paiement reçu - Facture {invoice_number}'),
                 'smtp_host' => EmailSetting::get('smtp_host', env('MAIL_HOST', 'smtp.gmail.com')),
                 'smtp_port' => EmailSetting::get('smtp_port', env('MAIL_PORT', '587')),
+                'smtp_username' => EmailSetting::get('smtp_username', env('MAIL_USERNAME', '')),
+                'smtp_password' => EmailSetting::get('smtp_password', env('MAIL_PASSWORD', '')),
                 'smtp_from_email' => EmailSetting::get('smtp_from_email', env('MAIL_FROM_ADDRESS', 'noreply@alprail.net')),
                 'smtp_from_name' => EmailSetting::get('smtp_from_name', env('MAIL_FROM_NAME', 'Alprail')),
             ];
@@ -72,6 +74,8 @@ class EmailController extends Controller
             'payment_subject' => 'required|string|max:255',
             'smtp_host' => 'nullable|string|max:255',
             'smtp_port' => 'nullable|string|max:10',
+            'smtp_username' => 'nullable|string|max:255',
+            'smtp_password' => 'nullable|string|max:255',
             'smtp_from_email' => 'nullable|email|max:255',
             'smtp_from_name' => 'nullable|string|max:255',
         ]);
@@ -101,6 +105,12 @@ class EmailController extends Controller
             }
             if ($request->smtp_port) {
                 EmailSetting::set('smtp_port', $request->smtp_port);
+            }
+            if ($request->smtp_username) {
+                EmailSetting::set('smtp_username', $request->smtp_username);
+            }
+            if ($request->smtp_password) {
+                EmailSetting::set('smtp_password', $request->smtp_password);
             }
             if ($request->smtp_from_email) {
                 EmailSetting::set('smtp_from_email', $request->smtp_from_email);
