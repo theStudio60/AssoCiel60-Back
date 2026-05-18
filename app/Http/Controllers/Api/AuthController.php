@@ -104,12 +104,10 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (!$user) {
-            // Pour des raisons de sécurité, on retourne toujours success
-            // même si l'email n'existe pas
             return response()->json([
-                'success' => true,
-                'message' => 'Si cet email existe, un lien de réinitialisation a été envoyé'
-            ]);
+                'success' => false,
+                'message' => 'Aucun compte trouvé avec cet email'
+            ], 404);
         }
 
         // Supprimer les anciens tokens pour cet email

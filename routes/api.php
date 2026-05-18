@@ -36,7 +36,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/verify-2fa', [AuthController::class, 'verify2FA']);
 // Reset password (public routes)
 Route::post('/password/reset', [App\Http\Controllers\Api\PasswordResetController::class, 'resetPassword']);
-
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 // Admin envoie reset link
 Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::prefix('admins')->group(function () {
