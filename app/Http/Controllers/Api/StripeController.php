@@ -10,7 +10,11 @@ use App\Models\SubscriptionPlan;
 use App\Models\Organization;
 use App\Models\Payment;
 use App\Models\ActivityLog;
+use App\Models\EmailSetting;
+use App\Mail\SubscriptionConfirmedMail;
+use App\Mail\InvoicePaidMail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class StripeController extends Controller
 {
@@ -193,6 +197,46 @@ class StripeController extends Controller
                     'transaction_id' => $request->session_id,
                 ]);
             }
+
+            // ============================================
+            // ✅ ENVOI DES EMAILS APRÈS PAIEMENT RÉUSSI
+            // ============================================
+            $user = \App\Models\User::where('organization_id', $organization->id)->first();
+
+            if ($user) {
+                // 1. Email confirmation abonnement
+                $subscriptionEnabled = EmailSetting::get('subscription_enabled', true);
+                if (filter_var($subscriptionEnabled, FILTER_VALIDATE_BOOLEAN)) {
+                    try {
+                        Mail::to($user->email)->send(new SubscriptionConfirmedMail(
+                            $subscription->load('subscriptionPlan'),
+                            $user,
+                            $organization
+                        ));
+                        Log::info('✅ Email confirmation abonnement envoyé à: ' . $user->email);
+                    } catch (\Exception $e) {
+                        Log::error('❌ Email subscription confirmed error: ' . $e->getMessage());
+                    }
+                }
+
+                // 2. Email confirmation paiement (facture payée)
+                $paymentEnabled = EmailSetting::get('payment_enabled', true);
+                if (filter_var($paymentEnabled, FILTER_VALIDATE_BOOLEAN)) {
+                    try {
+                        Mail::to($user->email)->send(new InvoicePaidMail(
+                            $invoice->load('organization', 'subscription.subscriptionPlan'),
+                            $user,
+                            $organization
+                        ));
+                        Log::info('✅ Email confirmation paiement envoyé à: ' . $user->email);
+                    } catch (\Exception $e) {
+                        Log::error('❌ Email payment confirmation error: ' . $e->getMessage());
+                    }
+                }
+            } else {
+                Log::warning('Aucun utilisateur trouvé pour organization_id: ' . $organization->id);
+            }
+            // ============================================
 
             // Log
             ActivityLog::log(

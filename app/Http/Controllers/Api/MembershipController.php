@@ -126,22 +126,8 @@ class MembershipController extends Controller
                 \Log::info('Email de bienvenue désactivé - non envoyé');
             }
 
-            // 6. Email confirmation abonnement - Vérifier si activé
-            $subscriptionEnabled = EmailSetting::get('subscription_enabled', true);
-            if (filter_var($subscriptionEnabled, FILTER_VALIDATE_BOOLEAN)) {
-                try {
-                    Mail::to($user->email)->send(new SubscriptionConfirmedMail(
-                        $subscription->load('subscriptionPlan'),
-                        $user,
-                        $organization
-                    ));
-                    \Log::info('Email confirmation abonnement envoyé à: ' . $user->email);
-                } catch (\Exception $e) {
-                    \Log::error('Email subscription confirmed error: ' . $e->getMessage());
-                }
-            } else {
-                \Log::info('Email confirmation abonnement désactivé - non envoyé');
-            }
+            // ⚠️ Email "Abonnement confirmé" déplacé dans confirmPayment()
+            // Il sera envoyé uniquement après paiement réussi
 
             // 7. Calculer le montant selon le pays
             $amount = $request->country === 'CHF' 
@@ -235,11 +221,26 @@ class MembershipController extends Controller
 
             DB::commit();
 
+            $user = \App\Models\User::where('organization_id', $invoice->organization_id)->first();
+
+            // ✅ Email confirmation abonnement APRÈS paiement réussi
+            $subscriptionEnabled = EmailSetting::get('subscription_enabled', true);
+            if (filter_var($subscriptionEnabled, FILTER_VALIDATE_BOOLEAN) && $user) {
+                try {
+                    Mail::to($user->email)->send(new SubscriptionConfirmedMail(
+                        $subscription->load('subscriptionPlan'),
+                        $user,
+                        $invoice->organization
+                    ));
+                    \Log::info('Email confirmation abonnement envoyé à: ' . $user->email);
+                } catch (\Exception $e) {
+                    \Log::error('Email subscription confirmed error: ' . $e->getMessage());
+                }
+            }
+
             // Email confirmation paiement - Vérifier si activé
             $paymentEnabled = EmailSetting::get('payment_enabled', true);
             if (filter_var($paymentEnabled, FILTER_VALIDATE_BOOLEAN)) {
-                $user = \App\Models\User::where('organization_id', $invoice->organization_id)->first();
-                
                 if ($user) {
                     try {
                         Mail::to($user->email)->send(new \App\Mail\InvoicePaidMail(
