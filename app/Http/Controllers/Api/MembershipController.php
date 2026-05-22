@@ -26,7 +26,7 @@ class MembershipController extends Controller
     {
         try {
             $plans = SubscriptionPlan::where('is_active', true)->get();
-            
+
             return response()->json([
                 'success' => true,
                 'plans' => $plans
@@ -74,8 +74,8 @@ class MembershipController extends Controller
         try {
             // 1. Créer l'organisation
             $organization = Organization::create([
-                'name' => $request->type === 'organization' 
-                    ? $request->organization_name 
+                'name' => $request->type === 'organization'
+                    ? $request->organization_name
                     : $request->first_name . ' ' . $request->last_name,
                 'email' => $request->email,
                 'type' => $request->type,
@@ -130,8 +130,8 @@ class MembershipController extends Controller
             // Il sera envoyé uniquement après paiement réussi
 
             // 7. Calculer le montant selon le pays
-            $amount = $request->country === 'CHF' 
-                ? $plan->price_chf 
+            $amount = $request->country === 'CHF'
+                ? $plan->price_chf
                 : $plan->price_eur;
 
             // 8. Créer la facture
@@ -165,10 +165,20 @@ class MembershipController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
+            \Log::error('Erreur inscription: ' . $e->getMessage());
+
+            // Détecter le doublon d'email proprement (sans exposer d'infos sensibles)
+            if (str_contains($e->getMessage(), 'Duplicate entry') && str_contains($e->getMessage(), 'email')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cet email est déjà utilisé. Si vous pensez qu\'il s\'agit d\'une erreur, veuillez contacter l\'association.'
+                ], 422);
+            }
+
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors de l\'inscription: ' . $e->getMessage()
+                'message' => 'Une erreur est survenue lors de l\'inscription. Veuillez réessayer ou contacter l\'association.'
             ], 500);
         }
     }
@@ -267,7 +277,7 @@ class MembershipController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de la confirmation: ' . $e->getMessage()
