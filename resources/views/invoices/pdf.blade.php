@@ -253,9 +253,9 @@
                 <td style="width: 50%;">
                     <div class="header-right">
                         <h1>FACTURE</h1>
-                        <p>Tél: +41 21 555 00 00</p>
+                        <p>Suisse +41 79 354 64 46 / France +33 6 52 74 44 04</p>
                         <p>Email: contact@alprail.net</p>
-                        <p>TVA: CHE-123.456.789</p>
+                        <p>IDE: CHE-180.859.840</p>
                     </div>
                 </td>
             </tr>
@@ -343,10 +343,10 @@
                 <td class="label">Sous-total</td>
                 <td class="amount">{{ number_format($invoice->amount, 2, '.', ' ') }} {{ $invoice->currency }}</td>
             </tr>
-            <tr>
+            {{-- <tr>
                 <td class="label">TVA ({{ $invoice->tax_amount > 0 ? number_format(($invoice->tax_amount / $invoice->amount) * 100, 1) : '0' }}%)</td>
                 <td class="amount">{{ number_format($invoice->tax_amount, 2, '.', ' ') }} {{ $invoice->currency }}</td>
-            </tr>
+            </tr> --}}
             <tr class="total">
                 <td class="label">TOTAL</td>
                 <td class="amount">{{ number_format($invoice->total_amount, 2, '.', ' ') }} {{ $invoice->currency }}</td>
@@ -357,7 +357,8 @@
     <!-- Payment Terms -->
     <div class="payment-terms">
         <h3>Modalités de paiement</h3>
-        <p><strong>IBAN:</strong> CH93 0076 2011 6238 5295 7 • <strong>BIC:</strong> UBSWCHZH80A • <strong>Banque:</strong> UBS Switzerland AG</p>
+        <p><strong>IBAN:</strong> CH64 0900 0000 4906 2441 2 • <strong>BIC/SWIFT:</strong> POFICHBEXXX</p>
+        <p><strong>Adresse bancaire:</strong> 1071 Chexbres - Suisse</p>
         <p><strong>Référence:</strong> {{ $invoice->invoice_number }} • Paiement sous 30 jours</p>
     </div>
 

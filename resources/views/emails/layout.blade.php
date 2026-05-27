@@ -76,8 +76,8 @@
         
         <div class="footer">
             <p>© {{ date('Y') }} Alprail. Tous droits réservés.</p>
-            <p>Route de Lausanne 1, 1000 Lausanne, Suisse</p>
-            <p>Email: contact@alprail.net | Tél: +41 21 555 00 00</p>
+            <p>1200 Genève, Suisse</p>
+            <p>Email: contact@alprail.net | Suisse +41 79 354 64 46 / France +33 6 52 74 44 04</p>
         </div>
     </div>
 </body>

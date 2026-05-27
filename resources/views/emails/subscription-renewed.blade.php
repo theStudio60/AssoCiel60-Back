@@ -50,8 +50,8 @@
         
         <div class="footer">
             <p>Merci de votre confiance !</p>
-            <p>ALPRAIL - Route de Lausanne 1, 1000 Lausanne, Suisse</p>
-            <p>contact@alprail.net | +41 21 555 00 00</p>
+            <p>ALPRAIL - 1200 Genève, Suisse</p>
+            <p>contact@alprail.net | Suisse +41 79 354 64 46 / France +33 6 52 74 44 04</p>
         </div>
     </div>
 </body>

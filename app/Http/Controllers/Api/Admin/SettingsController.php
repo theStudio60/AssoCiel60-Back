@@ -20,8 +20,8 @@ class SettingsController extends Controller
             $settings = [
                 'site_name' => 'Alprail',
                 'site_email' => 'contact@alprail.net',
-                'site_phone' => '+41 21 555 00 00',
-                'site_address' => 'Route de Lausanne 1, 1000 Lausanne, Suisse',
+                'site_phone' => 'Suisse +41 79 354 64 46 / France +33 6 52 74 44 04',
+                'site_address' => 'Alprail, 1200 Genève, SUISSE',
                 'currency' => 'CHF',
                 'tax_rate' => '0',
                 'invoice_prefix' => 'INV-',
