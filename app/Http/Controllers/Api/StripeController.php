@@ -54,7 +54,7 @@ class StripeController extends Controller
                         'currency' => $currency_lower,
                         'product_data' => [
                             'name' => $plan->name,
-                            'description' => "Abonnement {$plan->name}",
+                            'description' => "Adhésion {$plan->name}",
                         ],
                         'unit_amount' => (int)($amount * 100), // en centimes
                     ],
@@ -213,7 +213,7 @@ class StripeController extends Controller
                             $user,
                             $organization
                         ));
-                        Log::info('✅ Email confirmation abonnement envoyé à: ' . $user->email);
+                        Log::info('✅ Email confirmation Adhésion envoyé à: ' . $user->email);
                     } catch (\Exception $e) {
                         Log::error('❌ Email subscription confirmed error: ' . $e->getMessage());
                     }

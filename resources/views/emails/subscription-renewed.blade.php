@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Abonnement Renouvelé</title>
+    <title>Adhésion Renouvelée</title>
     <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
@@ -17,13 +17,13 @@
     <div class="container">
         <div class="header">
             <h1 style="margin: 0;">ALPRAIL</h1>
-            <p style="margin: 10px 0 0 0;">Renouvellement d'abonnement</p>
+            <p style="margin: 10px 0 0 0;">Renouvellement d'adhésion</p>
         </div>
         
         <div class="content">
             <h2>Bonjour {{ $user->first_name }},</h2>
             
-            <p>Nous vous confirmons que votre abonnement <strong>{{ $subscription->subscriptionPlan->name }}</strong> a été renouvelé automatiquement.</p>
+            <p>Nous vous confirmons que votre adhésion <strong>{{ $subscription->subscriptionPlan->name }}</strong> a été renouvelée automatiquement.</p>
             
             <div class="info-box">
                 <p style="margin: 0;"><strong>Détails du renouvellement :</strong></p>

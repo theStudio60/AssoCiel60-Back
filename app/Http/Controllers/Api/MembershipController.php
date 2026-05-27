@@ -126,7 +126,7 @@ class MembershipController extends Controller
                 \Log::info('Email de bienvenue désactivé - non envoyé');
             }
 
-            // ⚠️ Email "Abonnement confirmé" déplacé dans confirmPayment()
+            // ⚠️ Email "adhésion confirmé" déplacé dans confirmPayment()
             // Il sera envoyé uniquement après paiement réussi
 
             // 7. Calculer le montant selon le pays
@@ -233,7 +233,7 @@ class MembershipController extends Controller
 
             $user = \App\Models\User::where('organization_id', $invoice->organization_id)->first();
 
-            // ✅ Email confirmation abonnement APRÈS paiement réussi
+            // ✅ Email confirmation adhésion APRÈS paiement réussi
             $subscriptionEnabled = EmailSetting::get('subscription_enabled', true);
             if (filter_var($subscriptionEnabled, FILTER_VALIDATE_BOOLEAN) && $user) {
                 try {
@@ -242,7 +242,7 @@ class MembershipController extends Controller
                         $user,
                         $invoice->organization
                     ));
-                    \Log::info('Email confirmation abonnement envoyé à: ' . $user->email);
+                    \Log::info('Email confirmation adhésion envoyé à: ' . $user->email);
                 } catch (\Exception $e) {
                     \Log::error('Email subscription confirmed error: ' . $e->getMessage());
                 }

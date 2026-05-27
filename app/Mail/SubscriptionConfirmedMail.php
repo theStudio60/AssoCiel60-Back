@@ -23,7 +23,7 @@ class SubscriptionConfirmedMail extends Mailable
 
     public function build()
     {
-        return $this->subject('Votre abonnement est confirmé')
+        return $this->subject('Votre adhésion est confirmée')
                     ->view('emails.subscription-confirmed');
     }
 }

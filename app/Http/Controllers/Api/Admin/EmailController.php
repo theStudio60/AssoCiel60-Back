@@ -24,7 +24,7 @@ class EmailController extends Controller
                 'welcome_enabled' => EmailSetting::get('welcome_enabled', true),
                 'welcome_subject' => EmailSetting::get('welcome_subject', 'Bienvenue chez Alprail'),
                 'subscription_enabled' => EmailSetting::get('subscription_enabled', true),
-                'subscription_subject' => EmailSetting::get('subscription_subject', 'Votre abonnement est confirmé'),
+                'subscription_subject' => EmailSetting::get('subscription_subject', 'Votre adhésion est confirmée'),
                 'reminder_enabled' => EmailSetting::get('reminder_enabled', true),
                 'reminder_subject' => EmailSetting::get('reminder_subject', 'Rappel de paiement - Facture {invoice_number}'),
                 'reminder_days_before' => EmailSetting::get('reminder_days_before', 7),

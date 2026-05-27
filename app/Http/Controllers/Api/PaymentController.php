@@ -56,7 +56,7 @@ class PaymentController extends Controller
                 'intent' => 'CAPTURE',
                 'purchase_units' => [[
                     'reference_id' => 'PLAN_' . $plan->id,
-                    'description' => "Abonnement {$plan->name} - {$organization->name}",
+                    'description' => "Aadhésion {$plan->name} - {$organization->name}",
                     'amount' => [
                         'currency_code' => 'CHF',
                         'value' => number_format((float)$plan->price_chf, 2, '.', ''),

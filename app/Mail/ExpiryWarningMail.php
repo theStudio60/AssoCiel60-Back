@@ -25,7 +25,7 @@ class ExpiryWarningMail extends Mailable
 
     public function build()
     {
-        return $this->subject("Votre abonnement expire dans {$this->days} jours")
+        return $this->subject("Votre adhésion expire dans {$this->days} jours")
                     ->view('emails.expiry-warning')
                     ->with([
                         'subscription' => $this->subscription,

@@ -43,7 +43,7 @@ class ArticleNotificationController extends Controller
         ];
 
         try {
-            // Récupérer tous les membres actifs avec un abonnement actif
+            // Récupérer tous les membres actifs avec un adhésion actif
             $users = User::whereHas('organization.subscriptions', function($q) {
                 $q->where('status', 'active');
             })->where('status', 'active')->get();
