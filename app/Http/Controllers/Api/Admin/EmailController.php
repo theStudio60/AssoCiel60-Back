@@ -211,11 +211,26 @@ class EmailController extends Controller
                 'success' => true,
                 'message' => $message
             ]);
-        } catch (\Exception $e) {
+       } catch (\Exception $e) {
             \Log::error('Email test send error: ' . $e->getMessage());
+
+            $errorMessage = $e->getMessage();
+            $userMessage = 'Erreur lors de l\'envoi de l\'email de test.';
+
+            // Traduire les erreurs techniques en messages clairs
+            if (str_contains($errorMessage, '535') || str_contains($errorMessage, 'BadCredentials') || str_contains($errorMessage, 'Username and Password not accepted')) {
+                $userMessage = 'Identifiants SMTP incorrects. Vérifiez le nom d\'utilisateur et le mot de passe d\'application dans la configuration SMTP.';
+            } elseif (str_contains($errorMessage, 'Connection could not be established') || str_contains($errorMessage, 'timed out') || str_contains($errorMessage, 'timeout')) {
+                $userMessage = 'Impossible de se connecter au serveur SMTP. Vérifiez le serveur et le port.';
+            } elseif (str_contains($errorMessage, 'SSL') || str_contains($errorMessage, 'certificate')) {
+                $userMessage = 'Erreur de sécurité SSL/TLS. Vérifiez le port et le chiffrement.';
+            } elseif (str_contains($errorMessage, 'Connection refused')) {
+                $userMessage = 'Connexion refusée par le serveur SMTP. Vérifiez le serveur et le port.';
+            }
+
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors de l\'envoi de l\'email de test'
+                'message' => $userMessage
             ], 500);
         }
     }
