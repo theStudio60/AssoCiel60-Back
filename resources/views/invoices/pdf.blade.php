@@ -113,14 +113,15 @@
         
         .status-badge {
             display: inline-block;
-            padding: 3px 10px;
-            background: #e8f5e9;
-            color: #000;
-            border-radius: 3px;
-            font-size: 8pt;
-            font-weight: 700;
+            padding: 10px 25px;
+            background: #2e7d32;
+            color: #fff;
+            border-radius: 6px;
+            font-size: 18pt;
+            font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
+            letter-spacing: 1px;
+            margin-top: 8px;
         }
         
         .items-table {
@@ -359,7 +360,7 @@
         <h3>Modalités de paiement</h3>
         <p><strong>IBAN:</strong> CH64 0900 0000 4906 2441 2 • <strong>BIC/SWIFT:</strong> POFICHBEXXX</p>
         <p><strong>Adresse bancaire:</strong> 1071 Chexbres - Suisse</p>
-        <p><strong>Référence:</strong> {{ $invoice->invoice_number }} • Paiement sous 30 jours</p>
+        <p><strong>Référence:</strong> {{ $invoice->invoice_number }}</p>
     </div>
 
     <!-- Footer -->
